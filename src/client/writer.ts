@@ -75,9 +75,32 @@ function serializeBody(body: ProseMirrorDoc): string {
  */
 export class SubstackWriter {
   private readonly http: SubstackHTTP;
+  private cachedUserId: number | null = null;
 
   constructor(http: SubstackHTTP) {
     this.http = http;
+  }
+
+  /**
+   * Get the authenticated user's ID from /user/profile/self.
+   * This endpoint lives on substack.com, not the publication URL.
+   * Cached after first fetch.
+   */
+  private async getUserId(): Promise<number> {
+    if (this.cachedUserId !== null) return this.cachedUserId;
+    const token = this.http.getSessionToken();
+    const response = await fetch('https://substack.com/api/v1/user/profile/self', {
+      headers: {
+        'Cookie': `substack.sid=${token}; connect.sid=${token}`,
+        'User-Agent': 'substack-mcp/0.1.0',
+      },
+    });
+    if (!response.ok) {
+      throw new SubstackError(`Failed to fetch user profile: ${response.status}`);
+    }
+    const profile = await response.json() as { id: number };
+    this.cachedUserId = profile.id;
+    return profile.id;
   }
 
   /**
@@ -99,20 +122,20 @@ export class SubstackWriter {
   ): Promise<SubstackDraft> {
     validateNonEmpty(title, 'title');
 
+    // Always include draft_bylines — Substack requires it
+    const userId = options?.userId ?? await this.getUserId();
+    if (options?.userId !== undefined) validateId(options.userId, 'userId');
+
     const payload: Record<string, unknown> = {
       draft_title: title,
       draft_body: serializeBody(body),
+      draft_bylines: [{ id: userId }],
       audience: options?.audience ?? 'everyone',
       type: 'newsletter',
     };
 
     if (options?.subtitle !== undefined) {
       payload['draft_subtitle'] = options.subtitle;
-    }
-
-    if (options?.userId !== undefined) {
-      validateId(options.userId, 'userId');
-      payload['draft_bylines'] = [{ id: options.userId }];
     }
 
     return this.http.post<SubstackDraft>('/drafts', payload);

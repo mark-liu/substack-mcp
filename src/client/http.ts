@@ -72,6 +72,10 @@ function validatePublicationUrl(url: string): void {
 export class SubstackHTTP {
   private readonly baseUrl: string;
   private readonly token: string;
+
+  /** Expose session token for endpoints outside the publication base URL. */
+  getSessionToken(): string { return this.token; }
+
   private readonly maxRetries: number;
   private readonly rateLimitPerSecond: number;
   private lastRequestTime = 0;

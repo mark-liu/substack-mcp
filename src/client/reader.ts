@@ -68,7 +68,8 @@ export class SubstackReader {
       `/post_management/published` +
       `?offset=${offset}&limit=${limit}` +
       `&order_by=post_date&order_direction=desc`;
-    return this.http.get<SubstackPost[]>(path);
+    const response = await this.http.get<{ posts: SubstackPost[] }>(path);
+    return response.posts ?? [];
   }
 
   /**
@@ -113,10 +114,13 @@ export class SubstackReader {
       '/publication_launch_checklist',
     );
 
+    // The API returns { items, audience, subscribers: [...], steps }
+    // subscribers is an array of subscriber objects — count is the length
+    const subs = checklist.subscribers;
     const count =
+      (Array.isArray(subs) ? subs.length : null) ??
       checklist.subscriber_count ??
       checklist.total_subscribers ??
-      checklist.subscribers ??
       0;
 
     this.cachedSubscriberCount = count;

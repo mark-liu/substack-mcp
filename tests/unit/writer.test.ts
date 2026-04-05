@@ -12,6 +12,7 @@ function makeMockHttp(): SubstackHTTP {
     delete: vi.fn(),
     upload: vi.fn(),
     url: vi.fn(),
+    getSessionToken: vi.fn().mockReturnValue('test-token'),
   } as unknown as SubstackHTTP;
 }
 
@@ -34,6 +35,11 @@ describe('SubstackWriter', () => {
   beforeEach(() => {
     http = makeMockHttp();
     writer = new SubstackWriter(http);
+    // Mock global fetch for getUserId() which calls substack.com/api/v1/user/profile/self
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ id: 42 }),
+    }));
   });
 
   // ── createDraft ─────────────────────────────────────────────
@@ -50,6 +56,7 @@ describe('SubstackWriter', () => {
       expect(http.post).toHaveBeenCalledWith('/drafts', {
         draft_title: 'Test',
         draft_body: JSON.stringify(doc),
+        draft_bylines: [{ id: 42 }],
         audience: 'everyone',
         type: 'newsletter',
       });

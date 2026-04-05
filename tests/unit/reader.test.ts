@@ -55,7 +55,7 @@ describe('SubstackReader', () => {
 
     it('returns posts from API', async () => {
       const mockPosts = [{ id: 1, title: 'Post 1' }];
-      vi.mocked(http.get).mockResolvedValue(mockPosts);
+      vi.mocked(http.get).mockResolvedValue({ posts: mockPosts });
 
       const result = await reader.listPublished();
       expect(result).toEqual(mockPosts);
@@ -115,11 +115,11 @@ describe('SubstackReader', () => {
       expect(count).toBe(500);
     });
 
-    it('falls back to subscribers', async () => {
-      vi.mocked(http.get).mockResolvedValue({ subscribers: 100 });
+    it('falls back to subscribers array length', async () => {
+      vi.mocked(http.get).mockResolvedValue({ subscribers: [{id: 1}, {id: 2}, {id: 3}] });
 
       const count = await reader.getSubscriberCount();
-      expect(count).toBe(100);
+      expect(count).toBe(3);
     });
 
     it('returns 0 when no count field is present', async () => {
