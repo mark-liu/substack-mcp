@@ -1,0 +1,48 @@
+{
+  "name": "@mark-liu/substack-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Substack publishing — read and write via the undocumented API",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "substack-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "zod": "^3.24.4",
+    "unified": "^11.0.5",
+    "remark-parse": "^11.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1",
+    "msw": "^2.7.3",
+    "tsx": "^4.19.4",
+    "@types/node": "^22.15.2"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "mcp",
+    "substack",
+    "publishing",
+    "model-context-protocol"
+  ],
+  "author": "Mark Liu",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mark-liu/substack-mcp.git"
+  }
+}
