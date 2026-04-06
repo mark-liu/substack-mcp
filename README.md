@@ -1,6 +1,5 @@
 # substack-mcp
 
-[![npm version](https://img.shields.io/npm/v/@mark-liu/substack-mcp)](https://www.npmjs.com/package/@mark-liu/substack-mcp)
 [![CI](https://github.com/mark-liu/substack-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/mark-liu/substack-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -19,16 +18,18 @@ Destructive operations (`delete_draft`, `publish_draft`) have an additional **co
 
 ## Quick start
 
+Clone and build:
+
 ```bash
-npx @mark-liu/substack-mcp
+git clone https://github.com/mark-liu/substack-mcp.git
+cd substack-mcp
+npm install && npm run build
 ```
 
-Requires two environment variables:
+Add to Claude Code:
 
 ```bash
-SUBSTACK_PUBLICATION_URL=https://yourpub.substack.com \
-SUBSTACK_SESSION_TOKEN=your-session-token \
-npx @mark-liu/substack-mcp
+claude mcp add substack-mcp -s user -e SUBSTACK_PUBLICATION_URL=https://yourpub.substack.com -e SUBSTACK_SESSION_TOKEN=your-session-token -e SUBSTACK_ENABLE_WRITE=true -- node /path/to/substack-mcp/dist/index.js
 ```
 
 ## Configuration
