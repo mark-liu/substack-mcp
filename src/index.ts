@@ -66,11 +66,12 @@ async function main(): Promise<void> {
 
   await server.connect(transport);
 
-  if (config.enableWrite) {
-    console.error('substack-mcp: started with write mode ENABLED');
-  } else {
-    console.error('substack-mcp: started in read-only mode');
-  }
+  // Deliberately no startup banner on stderr. Claude Code (and other MCP
+  // clients) flag any stderr output as an `error` in their connection log,
+  // which surfaces the server as "failed" in the UI even on a clean start.
+  // The operator chose SUBSTACK_ENABLE_WRITE themselves; echoing it back on
+  // stderr is noise, not signal. Keep stderr reserved for real problems
+  // (missing env, bad config, auth failures, HTTP errors).
 }
 
 main().catch((err: unknown) => {
