@@ -154,11 +154,13 @@ describe('SubstackReader', () => {
 
   describe('getSections', () => {
     it('filters subscriptions by publication hostname', async () => {
-      vi.mocked(http.get).mockResolvedValue([
-        { id: 1, name: 'Section A', slug: 'a', publication: { hostname: 'test.substack.com' } },
-        { id: 2, name: 'Other', slug: 'b', publication: { hostname: 'other.substack.com' } },
-        { id: 3, name: 'Section C', slug: 'c', type: 'section' },
-      ]);
+      vi.mocked(http.get).mockResolvedValue({
+        subscriptions: [
+          { id: 1, name: 'Section A', slug: 'a', publication: { hostname: 'test.substack.com' } },
+          { id: 2, name: 'Other', slug: 'b', publication: { hostname: 'other.substack.com' } },
+          { id: 3, name: 'Section C', slug: 'c', type: 'section' },
+        ],
+      });
 
       const sections = await reader.getSections();
       expect(sections).toHaveLength(2);

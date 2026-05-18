@@ -85,7 +85,8 @@ export class SubstackReader {
     const offset = options?.offset ?? 0;
     const limit = options?.limit ?? 25;
     const path = `/drafts?filter=&offset=${offset}&limit=${limit}`;
-    return this.http.get<SubstackDraft[]>(path);
+    const response = await this.http.get<{ posts: SubstackDraft[] }>(path);
+    return response.posts ?? [];
   }
 
   /**
@@ -141,8 +142,10 @@ export class SubstackReader {
       return this.cachedSections;
     }
 
-    const subscriptions =
-      await this.http.get<SubscriptionEntry[]>('/subscriptions');
+    const response = await this.http.get<{
+      subscriptions: SubscriptionEntry[];
+    }>('/subscriptions');
+    const subscriptions = response.subscriptions ?? [];
 
     // Extract the publication hostname from the HTTP client's base URL
     // to filter subscriptions down to sections for this publication.
